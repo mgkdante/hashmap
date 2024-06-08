@@ -2,8 +2,8 @@ import LinkedList from "./linkedlist.js"
 
 class HashMap {
   size = 16
-  loadFactor = size * 0.75
-  buckets = new Array(16).fill(null)
+  loadFactor = this.size * 0.75
+  buckets = new Array(this.size)
 
   hash = (key) => {
     let hashCode = 0
@@ -16,57 +16,80 @@ class HashMap {
 
   set = (key, value) => {
     const hashCode = this.hash(key)
-    this.buckets[hashCode] = [key, value]
+    if (this.buckets[hashCode] === undefined) {
+      const linkedlist = new LinkedList()
+      linkedlist.append([key, value])
+      this.buckets[hashCode] = linkedlist
+    } else {
+      let current = this.buckets[hashCode].headNode
+      while (current) {
+        if (current.val[0] === key) {
+          current.val[1] = value
+          return
+        }
+        current = current.next
+      }
+      this.buckets[hashCode].append([key, value])
+    }
   }
 
   get = (key) => {
     const hashCode = this.hash(key)
-    return this.buckets[hashCode] === null
-      ? null
-      : this.buckets[hashCode][0] === key
-      ? this.buckets[hashCode][1]
-      : null
+    if (this.buckets[hashCode] === undefined) {
+      return null
+    }
+    let current = this.buckets[hashCode].headNode
+    while (current) {
+      if (current.val[0] === key) {
+        return current.val[1]
+      }
+      current = current.next
+    }
+    return null
   }
 
   has = (key) => {
-    return this.get(key) === null ? false : true
+    return this.get(key) !== null
   }
 
   remove = (key) => {
     const hashCode = this.hash(key)
-    if (this.has) {
-      this.buckets.splice(hashCode, 1)
-      return true
+    if (this.buckets[hashCode] !== undefined) {
+      const index = this.buckets[hashCode].find([key, this.get(key)])
+      if (index === null) {
+        return false
+      } else {
+        this.buckets[hashCode].removeAt(index)
+        return true
+      }
     } else {
       return false
     }
   }
 
   length = () => {
-    let count = 0
+    let counter = 0
     for (let i = 0; i < this.buckets.length; i++) {
-      if (i < 0 || i >= this.buckets.length) {
-        throw new Error("Trying to access index out of bound")
-      }
-      if (this.buckets[i] !== null) {
-        count += 1
+      if (this.buckets[i] !== undefined) {
+        counter += this.buckets[i].size()
       }
     }
-    return count
+    return counter
   }
 
   clear = () => {
-    this.buckets = new Array(16).fill(null)
+    this.buckets = new Array(16)
   }
 
   keys = () => {
     let keys = []
     for (let i = 0; i < this.buckets.length; i++) {
-      if (i < 0 || i >= this.buckets.length) {
-        throw new Error("Trying to access index out of bound")
-      }
-      if (this.buckets[i] !== null) {
-        keys.push(this.buckets[i][0])
+      if (this.buckets[i] !== undefined) {
+        let current = this.buckets[i].headNode
+        while (current) {
+          keys.push(current.val[0])
+          current = current.next
+        }
       }
     }
     return keys
@@ -75,11 +98,12 @@ class HashMap {
   values = () => {
     let keys = []
     for (let i = 0; i < this.buckets.length; i++) {
-      if (i < 0 || i >= this.buckets.length) {
-        throw new Error("Trying to access index out of bound")
-      }
-      if (this.buckets[i] !== null) {
-        keys.push(this.buckets[i][1])
+      if (this.buckets[i] !== undefined) {
+        let current = this.buckets[i].headNode
+        while (current) {
+          keys.push(current.val[1])
+          current = current.next
+        }
       }
     }
     return keys
@@ -88,11 +112,12 @@ class HashMap {
   entries = () => {
     let keys = []
     for (let i = 0; i < this.buckets.length; i++) {
-      if (i < 0 || i >= this.buckets.length) {
-        throw new Error("Trying to access index out of bound")
-      }
-      if (this.buckets[i] !== null) {
-        keys.push(this.buckets[i])
+      if (this.buckets[i] !== undefined) {
+        let current = this.buckets[i].headNode
+        while (current) {
+          keys.push(current.val)
+          current = current.next
+        }
       }
     }
     return keys
@@ -101,23 +126,17 @@ class HashMap {
 
 const hashMap = new HashMap()
 hashMap.set("yesid", 16)
-hashMap.set("fernandoooooooop", 17)
+hashMap.set("fernando", 17)
 hashMap.set("otalora", 18)
 hashMap.set("nivia", 19)
 console.log(hashMap.get("yesid"))
 console.log(hashMap.has("yesid"))
-console.log(hashMap.length())
 console.log(hashMap.keys())
 console.log(hashMap.values())
 console.log(hashMap.entries())
-
-/*
+console.log(hashMap.length())
 hashMap.remove("yesid")
 console.log(hashMap.get("yesid"))
 console.log(hashMap.has("yesid"))
-console.log(hashMap.length())
-
 hashMap.clear()
-
 console.log(hashMap.length())
-*/
