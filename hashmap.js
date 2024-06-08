@@ -124,19 +124,4 @@ class HashMap {
   }
 }
 
-const hashMap = new HashMap()
-hashMap.set("yesid", 16)
-hashMap.set("fernando", 17)
-hashMap.set("otalora", 18)
-hashMap.set("nivia", 19)
-console.log(hashMap.get("yesid"))
-console.log(hashMap.has("yesid"))
-console.log(hashMap.keys())
-console.log(hashMap.values())
-console.log(hashMap.entries())
-console.log(hashMap.length())
-hashMap.remove("yesid")
-console.log(hashMap.get("yesid"))
-console.log(hashMap.has("yesid"))
-hashMap.clear()
-console.log(hashMap.length())
+export default HashMap
